@@ -8,13 +8,13 @@
 
     <!-- start circle detection and tracking for left camera -->
     <node name="LeftHandCircleFinder" pkg="circle_detection" type="circle_finder" required="true" output="screen">
-        <param name="camera" type="str" value="Left" />
+        <param name="camera" type="str" value="left" />
     </node>
 
 
     <!-- start circle detection and tracking for right camera -->
     <node name="RightHandCircleFinder" pkg="circle_detection" type="circle_finder" required="true" output="screen">
-        <param name="camera" type="str" value="Right" />
+        <param name="camera" type="str" value="right" />
     </node>
 
     <!-- view procesed image from left circle tracker  -->
