@@ -123,8 +123,8 @@ void FindCircle::cameraInfoCallBack(const sensor_msgs::CameraInfo &msg) {
 
 FindCircle::FindCircle(void) {
     nh = new ros::NodeHandle("~");
-    defaultImageWidth = 1280;
-    defaultImageHeight = 1024;
+    defaultImageWidth = 640;
+    defaultImageHeight = 400;
     circleDiameter = 0.049;
 }
 
@@ -164,7 +164,7 @@ void FindCircle::init(int argc, char* argv[]) {
     image->getSaveNumber();
     image_transport::Subscriber subim = it.subscribe("/cameras/" + topic + "_hand_camera/image", 1, &FindCircle::imageCallback, this);
 
-    imdebug = it.advertise("/cameras/" + topic + "_hand_camera/image", 1);
+    imdebug = it.advertise("/circledetection/"+topic+"/rgb/processedimage", 1);
     pubLeft = nh->advertise<circle_detection::detection_results_array>("/circledetection/left_circleArray", 1);
     pubRight = nh->advertise<circle_detection::detection_results_array>("/circledetection/right_circleArray", 1);
     vis_pub = nh->advertise<visualization_msgs::MarkerArray>("/circledetection/" + topic + "/rviz_marker", 1);
