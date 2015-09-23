@@ -13,7 +13,7 @@ import rospkg
 class interactive_face:
 
     def __init__(self):
-        self.pub = rospy.Publisher('/Baxter/Face/Zoidberg', Image, queue_size=10)
+        self.pub = rospy.Publisher('/robot/xdisplay', Image, queue_size=1)
         self.bridge = CvBridge()
         self.cv_bg = np.zeros((600,1024,3), np.uint8)
         self.cv_bg[:,:] = (91,91,240)
@@ -24,11 +24,11 @@ class interactive_face:
         self.cv_face = self.cv_blink[0]
         self.face_offsetX = 370
         self.face_offsetY = 150
-        rospy.Timer(rospy.Duration(3), self.blink)
+        rospy.Timer(rospy.Duration(5), self.blink)
 
     def run(self):
         l_img = self.cv_bg
-        self.rate = rospy.Rate(30)
+        self.rate = rospy.Rate(8)
         while not rospy.is_shutdown():
             s_img = self.cv_face
             l_img[self.face_offsetY:(s_img.shape[0]+self.face_offsetY),self.face_offsetX:(s_img.shape[1]+self.face_offsetX),:] = s_img
@@ -36,13 +36,13 @@ class interactive_face:
             self.rate.sleep()
         
     def blink(self,event):
-        r = rospy.Rate(25)
-        r2 = rospy.Rate(15)
+        r = rospy.Rate(7)
+        r2 = rospy.Rate(5)
         for i in range(0,4):
             self.cv_face = self.cv_blink[i]
             r.sleep()
-        r.sleep()
-        for i in reversed(range(0,4)):
+        r2.sleep()
+        for i in range(3,-1,-1):
             self.cv_face = self.cv_blink[i]
             r2.sleep()
 
