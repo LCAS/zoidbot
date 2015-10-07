@@ -6,6 +6,11 @@
     <arg name="machine" default="localhost" />
     <arg name="user" default="" />
 
+
+    <node name="rightHandCamSetup" pkg="baxter_tools" type="camera_control.py" required="false" output="screen" args="-o right_hand_camera -r 1280x800"/>
+
+    <node name="leftHandCamSetup" pkg="baxter_tools" type="camera_control.py" required="false" output="screen" args="-o left_hand_camera -r 1280x800"/>
+
     <!-- start circle detection and tracking for left camera -->
     <node name="LeftHandCircleFinder" pkg="circle_detection" type="circle_finder" required="true" output="screen">
         <param name="camera" type="str" value="left" />
