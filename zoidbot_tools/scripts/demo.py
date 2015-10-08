@@ -12,6 +12,13 @@ import baxter_interface
 #from baxter_examples import JointRecorder
 from baxter_interface import CHECK_VERSION
 
+def reset_limbs():
+    right_arm = baxter_interface.limb.Limb('right')
+    left_arm = baxter_interface.limb.Limb('left')
+    right_arm.move_to_neutral()
+    left_arm.move_to_neutral()
+
+    
 
 class Puppeteer(object):
 
@@ -206,8 +213,8 @@ class JointPlayer(object):
                     grip_right.type() != 'custom'):
                     grip_right.command_position(cmd['right_gripper'])
                 rate.sleep()
-            print "This is done:"
-        print "DONEEEE"
+            print 
+        #print "DONEEEE"
         return True
 
 
@@ -382,7 +389,7 @@ class BaxInputRead(object):
         rospy.on_shutdown(self._on_node_shutdown)
         self.rs = baxter_interface.RobotEnable(CHECK_VERSION)
         
-        self.recorder = JointRecorder('/tmp/baxter.traj', 100)
+        self.recorder = JointRecorder('/tmp/baxter.traj', 20)
         self.player = JointPlayer('/tmp/baxter.traj')
         self.lmirror = Puppeteer('left')
         self.rmirror = Puppeteer('right')
@@ -407,14 +414,19 @@ class BaxInputRead(object):
             if com['limb'] == 'torso_right':
                 if com['button'] == 0:
                     self.new_mode = 'mirror_right'
-                else:
-                    self.new_mode = 'iddle'
+                elif  com['button'] == 1:
+                    self.new_mode = 'disable'
+                elif com['button'] == 2:
+                    self.new_mode = 'neutral'
+
     
             if com['limb'] == 'torso_left':
                 if com['button'] == 0:
                     self.new_mode = 'mirror_left'
-                else:
-                    self.new_mode = 'iddle'
+                elif  com['button'] == 1:
+                    self.new_mode = 'disable'
+                elif com['button'] == 2:
+                    self.new_mode = 'neutral'
     
             if com['limb'] == 'left':
                 if com['button'] == 0:
@@ -438,6 +450,11 @@ class BaxInputRead(object):
     def set_mode(self):
         if self.new_mode != self.mode and self.new_mode != 'none' :
             print "changing from %s to %s" %(self.mode, self.new_mode)
+          
+            if self.mode == 'disable':
+                print "Enable"
+                self.rs.enable()
+            
             if self.mode == 'record':
                 print "STOP RECORDING"
                 self.recorder.stop    
@@ -461,6 +478,7 @@ class BaxInputRead(object):
                     self.done_playing=False
                     if self.player.play_file():
                         self.done_playing=True
+                        self.new_mode = 'iddle'
                 else:
                     print "No trajectory recorded please record one and try again"
                     self.new_mode = 'iddle'
@@ -474,7 +492,7 @@ class BaxInputRead(object):
                     sleep(0.5)
                     i.set_blink(True)
                 del self.recorder
-                self.recorder = JointRecorder('/tmp/baxter.traj', 100)
+                self.recorder = JointRecorder('/tmp/baxter.traj', 20)
                 self.recorder.record()
     
 
@@ -497,6 +515,13 @@ class BaxInputRead(object):
                 print "START MIRROR RIGHT"
                 self.rmirror.puppet()
 
+
+            if self.new_mode == 'neutral':            
+                reset_limbs()
+                print "limbs at neutral, setting idle mode"
+                self.new_mode='iddle'
+
+
             if self.new_mode == 'iddle':
                 print "IDDLE"
                 for i in self.limbs:
@@ -504,6 +529,17 @@ class BaxInputRead(object):
                     sleep(0.5)
                     i.set_leds(True)
             
+            if self.new_mode == 'disable':
+                print "Disable"
+                for i in self.limbs:
+                    i.set_blink(False)
+                    sleep(0.5)
+                    i.set_leds(False)
+                reset_limbs()
+                self.rs.disable()
+
+                
+                
             self.mode=self.new_mode
             self.new_mode='none'
 
