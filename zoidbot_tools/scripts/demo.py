@@ -218,11 +218,35 @@ class BaxIOinterface(object):
     def __init__(self, intname) :
         self.intname =intname
         self.toggled = False
+        self.blinking = False
         self.nav = baxter_interface.Navigator(intname)
         self.nav.button0_changed.connect(self.b0_pressed)
         self.nav.button1_changed.connect(self.b1_pressed)
         self.nav.button2_changed.connect(self.b2_pressed)
         self.b=[0,0,0]
+
+    def set_leds(self, v):
+        self.blinking=False
+        self.nav.inner_led = v
+        self.nav.outer_led = v
+
+    def toggle_leds(self):
+        self.nav.inner_led = not self.nav.inner_led 
+        self.nav.outer_led = not self.nav.outer_led
+        if self.blinking:
+            t = Timer(self.period, self.toggle_leds)
+            t.start()        
+        
+    def set_blink(self, v, fast=False):
+        if fast:
+            self.period = 0.1
+        else:
+            self.period = 0.5
+        self.blinking = v
+        if v:
+            t = Timer(self.period, self.toggle_leds)
+            t.start()
+
 
     def b0_pressed(self, v):
         self.toggled = True
@@ -367,8 +391,10 @@ class BaxInputRead(object):
         self.limbs=[]
         for i in self.limbnames:
             self.limbs.append(BaxIOinterface(i))
+            
         self.rs.enable()
-        
+        for i in self.limbs:
+            i.set_leds(True)
         t = Timer(1.0, self.readinginps)
         t.start()
 
@@ -428,6 +454,10 @@ class BaxInputRead(object):
             if self.new_mode == 'play': #and self.done_playing:
                 if self.file_created:
                     print "Start Playing"
+                    for i in self.limbs:
+                        i.set_leds(False)
+                        sleep(0.5)
+                        i.set_blink(True, fast=True)
                     self.done_playing=False
                     if self.player.play_file():
                         self.done_playing=True
@@ -439,6 +469,10 @@ class BaxInputRead(object):
             
             if self.new_mode == 'record':
                 print "Start Recording"
+                for i in self.limbs:
+                    i.set_leds(False)
+                    sleep(0.5)
+                    i.set_blink(True)
                 del self.recorder
                 self.recorder = JointRecorder('/tmp/baxter.traj', 100)
                 self.recorder.record()
@@ -447,14 +481,28 @@ class BaxInputRead(object):
             
             if self.new_mode == 'mirror_left':
                 print "START MIRROR LEFT"
+                for i in self.limbs:
+                    i.set_leds(True)
+                sleep(0.5)
+                self.limbs[0].set_blink(True)
+                self.limbs[1].set_blink(True)
                 self.lmirror.puppet()
 
             if self.new_mode == 'mirror_right':
+                for i in self.limbs:
+                    i.set_leds(True)
+                sleep(0.5)
+                self.limbs[3].set_blink(True)
+                self.limbs[2].set_blink(True)
                 print "START MIRROR RIGHT"
                 self.rmirror.puppet()
 
             if self.new_mode == 'iddle':
                 print "IDDLE"
+                for i in self.limbs:
+                    i.set_blink(False)
+                    sleep(0.5)
+                    i.set_leds(True)
             
             self.mode=self.new_mode
             self.new_mode='none'
@@ -480,6 +528,8 @@ class BaxInputRead(object):
     def _on_node_shutdown(self):
         self._killall_timers=True
         self.rs.disable()
+        for i in self.limbs:
+            i.set_leds(False)
         sleep(2)
 
 
