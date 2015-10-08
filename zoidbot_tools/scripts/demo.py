@@ -1,6 +1,7 @@
 #!/usr/bin/python2
 
 import sys
+import os
 from time import sleep
 
 from threading import Timer
@@ -331,6 +332,9 @@ class JointRecorder(object):
         existing files.
         """
         if self._filename:
+            
+            if os.path.exists(self._filename):
+                os.remove(self._filename)
             self.joints_left = self._limb_left.joint_names()
             self.joints_right = self._limb_right.joint_names()
             
