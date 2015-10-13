@@ -44,7 +44,6 @@ class BaxInputRead(object):
         self.rs = baxter_interface.RobotEnable(CHECK_VERSION)
         
         self.recorder = JointRecorder('/tmp/baxter.traj', 20)
-        self.player = JointPlayer('/tmp/baxter.traj')
         self.lmirror = Puppeteer('left')
         self.rmirror = Puppeteer('right')
         
@@ -130,7 +129,8 @@ class BaxInputRead(object):
                         sleep(0.5)
                         i.set_blink(True, fast=True)
                     self.done_playing=False
-                    if self.player.play_file():
+                    player = JointPlayer('/tmp/baxter.traj')
+                    if player.play_file():
                         self.done_playing=True
                         self.new_mode = 'iddle'
                 else:
