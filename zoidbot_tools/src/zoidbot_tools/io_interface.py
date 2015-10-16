@@ -43,7 +43,6 @@ class BaxIOinterface(object):
             t = Timer(self.period, self.toggle_leds)
             t.start()
 
-
     def b0_pressed(self, v):
         self.toggled = True
         self.b[0]=1

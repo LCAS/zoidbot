@@ -43,7 +43,7 @@ class BaxInputRead(object):
         rospy.on_shutdown(self._on_node_shutdown)
         self.rs = baxter_interface.RobotEnable(CHECK_VERSION)
         
-        self.recorder = JointRecorder('/tmp/baxter.traj', 20)
+        self.recorder = JointRecorder('/tmp/baxter.traj', 100)
         self.lmirror = Puppeteer('left')
         self.rmirror = Puppeteer('right')
         
@@ -110,7 +110,7 @@ class BaxInputRead(object):
             
             if self.mode == 'record':
                 print "STOP RECORDING"
-                self.recorder.stop    
+                self.recorder.stop()
                 self.file_created = True
 
             if self.mode == 'mirror_left':
@@ -146,7 +146,7 @@ class BaxInputRead(object):
                     sleep(0.5)
                     i.set_blink(True)
                 del self.recorder
-                self.recorder = JointRecorder('/tmp/baxter.traj', 20)
+                self.recorder = JointRecorder('/tmp/baxter.traj', 100)
                 self.recorder.record()
     
 
@@ -201,10 +201,8 @@ class BaxInputRead(object):
         command={}
         for i in self.limbs:
             if i.toggled:
-                #print "Button %d Pressed in %s" %(i.b.index(1),i.intname)
                 command['limb']= i.intname
                 command['button']= i.b.index(1)
-                #print command
                 self.commands.append(command)
             i.set_checked()
         

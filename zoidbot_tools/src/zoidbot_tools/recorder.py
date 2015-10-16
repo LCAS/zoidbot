@@ -50,6 +50,8 @@ class JointRecorder(object):
         """
         Stop recording.
         """
+        print "!!!! Closing Record File !!!!"
+        #self.file.close()
         self._done = True
 
     def done(self):
@@ -113,6 +115,7 @@ class JointRecorder(object):
             t = Timer(1.0/self._raw_rate, self.save)
             t.start()
         else:
-            self.file.close
+            print "!!!! Closing Record File !!!!"
+            self.file.close()
         #self._rate.sleep()
 
