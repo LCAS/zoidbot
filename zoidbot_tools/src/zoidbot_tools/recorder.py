@@ -51,7 +51,7 @@ class JointRecorder(object):
         Stop recording.
         """
         print "!!!! Closing Record File !!!!"
-        self.file.close()
+        #self.file.close()
         self._done = True
 
     def done(self):
