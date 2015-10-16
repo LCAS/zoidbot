@@ -2,11 +2,11 @@
 
 from time import sleep
 
-import baxter_interface
-
 from threading import Timer
 import rospy
 
+import baxter_interface
+from baxter_interface import CHECK_VERSION
 
 class Puppeteer(object):
 
@@ -25,6 +25,14 @@ class Puppeteer(object):
         self._amp = amplification
 
         self.stop=True
+        self._gripper_control = baxter_interface.Gripper(self._control_limb, CHECK_VERSION)
+        self._gripper_puppet = baxter_interface.Gripper(self._puppet_limb, CHECK_VERSION)
+        if self._control_limb == 'left':
+            self._io_control_lower = baxter_interface.DigitalIO('left_lower_button')
+            self._io_control_upper = baxter_interface.DigitalIO('left_upper_button')
+        else:
+            self._io_control_lower = baxter_interface.DigitalIO('right_lower_button')
+            self._io_control_upper = baxter_interface.DigitalIO('right_upper_button')
 #        print("Getting robot state... ")
 #        self._rs = baxter_interface.RobotEnable(CHECK_VERSION)
 #        self._init_state = self._rs.state().enabled
@@ -77,6 +85,13 @@ class Puppeteer(object):
     
     def move(self):
         if not self.stop:
+            if self._io_control_lower.state:
+                self._gripper_puppet.open()
+                self._gripper_control.open()
+            elif self._io_control_upper.state:
+                self._gripper_puppet.close()
+                self._gripper_control.close()            
+            
             cmd = {}
             for idx, name in enumerate(self.puppet_joint_names):
                 v = self._control_arm.joint_velocity(

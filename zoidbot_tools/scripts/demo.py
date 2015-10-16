@@ -110,7 +110,7 @@ class BaxInputRead(object):
             
             if self.mode == 'record':
                 print "STOP RECORDING"
-                self.recorder.stop    
+                self.recorder.stop()
                 self.file_created = True
 
             if self.mode == 'mirror_left':
