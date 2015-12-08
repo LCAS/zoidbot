@@ -9,11 +9,14 @@ from sensor_msgs.msg import Image
 import sys
 import tf
 import rospkg
+from std_msgs.msg import UInt8
 
 class interactive_face:
 
     def __init__(self):
         self.pub = rospy.Publisher('/robot/xdisplay', Image, queue_size=1)
+        self.detected_people = 0
+        rospy.Subscriber("/openni_tracker/detected_humans", UInt8, self.people_detection)
         self.bridge = CvBridge()
         self.cv_bg = np.zeros((600,1024,3), np.uint8)
         self.cv_bg[:,:] = (91,91,240)
@@ -26,6 +29,9 @@ class interactive_face:
         self.face_offsetY = 150
         rospy.Timer(rospy.Duration(5), self.blink)
 
+    def people_detection(self, msg):
+        self.detected_people = msg.data
+
     def run(self):
         l_img = self.cv_bg
         self.rate = rospy.Rate(8)
@@ -36,6 +42,9 @@ class interactive_face:
             self.rate.sleep()
         
     def blink(self,event):
+        if not bool(self.detected_people):
+            self.cv_face = self.cv_blink[3]
+            return
         r = rospy.Rate(7)
         r2 = rospy.Rate(5)
         for i in range(0,4):

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+  
+    <node pkg="whycon" type="whycon" name="whycon_right" respawn="true" output="screen">
+	<param name="targets" value="1" type="int"/>
+	<param name="outer_diameter" value="0.03" type="double"/>
+	<param name="inner_diameter" value="0.01" type="double"/>
+	<param name="target_frame" value="right_hand_camera"/>
+	<remap from="/camera/image_rect_color" to="/cameras/right_hand_camera/image"/>
+  </node>
+  
+  <!--<node pkg="whycon" type="whycon" name="whycon_left" respawn="true" output="screen">
+	<param name="targets" value="1" type="int"/>
+	<param name="outer_diameter" value="0.03" type="double"/>
+	<param name="inner_diameter" value="0.01" type="double"/>
+	<param name="target_frame" value="left_hand_camera"/>
+	<remap from="/camera/image_rect_color" to="/cameras/left_hand_camera/image"/>
+  </node>-->
+
+
+  <node pkg="zoidbot_tools" type="whycon_transform.py" name="whycon_transform" respawn="true" output="screen"/>
+  
+</launch>
