@@ -1,0 +1,10 @@
+<launch>
+
+	<!-- Head Xtion Camera -->
+	<include file="$(find openni_launch)/launch/openni.launch">
+	    <arg name="camera" value="xtion_camera" />
+	</include>
+
+	<node name="static_transform_publisher" pkg="tf" type="static_transform_publisher" args="0.18 0 0.155 0 0 0 /base /xtion_camera_link 50"/>
+
+</launch>

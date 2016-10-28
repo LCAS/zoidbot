@@ -13,7 +13,7 @@ tmux split-window -v
 tmux select-pane -t 0
 tmux send-keys "cd ~/baxter_ws" C-m
 tmux send-keys "./baxter.sh" C-m
-tmux send-keys "rosrun interactive_face zoidberg.py"
+tmux send-keys "rosrun interactive_face zoidberg.py" C-m
 tmux resize-pane -U 30
 tmux select-pane -t 1
 tmux send-keys "cd ~/baxter_ws" C-m
@@ -24,7 +24,7 @@ tmux select-pane -t 2
 tmux send-keys "cd ~/baxter_ws" C-m
 tmux send-keys "./baxter.sh" C-m
 tmux send-keys "rosrun zoidbot_tools demo.py"
-tmux select-pane -t 0
+tmux select-pane -t 1
 
 tmux select-window -t $SESSION:1
 tmux send-keys "cd ~/baxter_ws" C-m

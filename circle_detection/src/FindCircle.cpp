@@ -123,8 +123,8 @@ void FindCircle::cameraInfoCallBack(const sensor_msgs::CameraInfo &msg) {
 
 FindCircle::FindCircle(void) {
     nh = new ros::NodeHandle("~");
-    defaultImageWidth = 640;
-    defaultImageHeight = 400;
+    defaultImageWidth = 1280;
+    defaultImageHeight = 800;
     circleDiameter = 0.049;
 }
 
@@ -160,7 +160,7 @@ void FindCircle::init(int argc, char* argv[]) {
     for (int i = 0; i < MAX_PATTERNS; i++) {
         detectorArray[i] = new CCircleDetect(this->defaultImageWidth, this->defaultImageHeight);
     }
-    cameraInfo = nh->subscribe("/" + topic + "/rgb/camera_info", 1, &FindCircle::cameraInfoCallBack, this);
+    cameraInfo = nh->subscribe("/cameras/right_hand_camera/camera_info", 1, &FindCircle::cameraInfoCallBack, this);
     image->getSaveNumber();
     image_transport::Subscriber subim = it.subscribe("/cameras/" + topic + "_hand_camera/image", 1, &FindCircle::imageCallback, this);
 
@@ -171,8 +171,6 @@ void FindCircle::init(int argc, char* argv[]) {
     lookup = new tf::TransformListener();
     ROS_DEBUG("Server running");
     ros::spin();
-
-
 }
 
 int main(int argc, char* argv[]) {
